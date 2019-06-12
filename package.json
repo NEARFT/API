@@ -47,7 +47,7 @@
     "compile": "tsc -p ./tsconfig.json",
     "build": "npm run generate-protos && npm run compile",
     "test": "npm run generate-protos && jest test --runInBand",
-    "lint": "eslint .",
+    "lint": "eslint test && tslint -p tsconfig.json -c tslint.yml 'src.ts/**/*.ts'",
     "fix": "eslint . --fix",
     "prepare": "tsc -p ./tsconfig.json && npm run doc",
     "doc": "typedoc --out docs --theme markdown -mdEngine gitbook src.ts/"

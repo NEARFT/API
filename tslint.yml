@@ -1,0 +1,10 @@
+extends: 'tslint:recommended'
+rules:
+  quotemark:
+    - single
+  indent:
+    - spaces
+    - 4
+  no-console: off
+  no-floating-promises: on
+
