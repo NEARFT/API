@@ -1,7 +1,7 @@
 image: node:10
 
 variables:
-  NODE_ENV: ci
+  NODE_ENV: ci-staging
   HELLO_WASM_PATH: nearcore/tests/hello.wasm
 
 stages:
