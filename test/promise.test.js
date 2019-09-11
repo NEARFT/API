@@ -239,4 +239,24 @@ describe('with promises', () => {
             n: contractName,
         });
     });
+
+    test('promise all test', async () => {
+        await contract.callPromiseAll({
+            args: {
+                receiver: contractName2,
+                methodName: 'callbackWithName',
+                args: null,
+                gas: 400000,  //1084680
+                balance: 0,
+                callback: 'callbackWithName',
+                callbackArgs: null,
+                callbackBalance: 0,
+                callbackGas: 500000,
+            }});
+        const lastResult2 = await contract2.getLastResult();
+        expect(lastResult2).toEqual({
+            rs: [],
+            n: contractName2,
+        });
+    });
 });

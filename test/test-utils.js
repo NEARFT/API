@@ -39,7 +39,7 @@ async function deployContract(workingAccount, contractId, options = { amount: ne
     await workingAccount.createAndDeployContract(contractId, newPublicKey, data, options.amount);
     return new nearlib.Contract(workingAccount, contractId, {
         viewMethods: ['getValue', 'getLastResult'],
-        changeMethods: ['setValue', 'callPromise']
+        changeMethods: ['setValue', 'callPromise', 'callPromiseAll']
     });
 }
 
