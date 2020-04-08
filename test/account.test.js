@@ -205,4 +205,19 @@ describe('with deploy contract', () => {
         });
         expect(await contract.hello({ name: 'world' })).toEqual('hello world');
     });
+
+    // TODO: Test accidental submit with same nonce (as it didn't get reloaded)
+    // https://github.com/near/near-api-js/issues/205
+    test('can submit 2 transaction at once without nonce conflicts', async () => {
+        try {
+            const results = await Promise.all([
+                contract.setValue({ value: '1' }),
+                contract.setValue({ value: '2' })
+            ]);
+            expect(results).toEqual(['1', '2'])
+        } catch (e) {
+            console.error('error', e);
+            throw e;
+        }
+    });
 });
