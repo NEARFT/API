@@ -1,17 +1,6 @@
 const nearApi = require('../../lib/index');
 const {
     parseRpcError,
-    AccountAlreadyExists,
-    ReceiverMismatch,
-    InvalidTxError,
-    ActionError,
-    TxExecutionError,
-    InvalidAccessKeyError,
-    FunctionCallError,
-    HostError,
-    InvalidIteratorIndex,
-    GasLimitExceeded,
-    formatError
 } = nearApi.utils.rpc_errors;
 describe('rpc-errors', () => {
     test('test AccountAlreadyExists error', async () => {
@@ -24,11 +13,11 @@ describe('rpc-errors', () => {
             }
         };
         let error = parseRpcError(rpc_error);
-        expect(error instanceof TxExecutionError).toBe(true);
-        expect(error instanceof AccountAlreadyExists).toBe(true);
-        expect(error.index).toBe(1);
-        expect(error.account_id).toBe('bob.near');
-        expect(formatError(error.type, error)).toBe('Can\'t create a new account bob.near, because it already exists');
+        expect(error.type, 'TxExecutionError.ActionError.AccounttAlreadyExists')
+        expect(error.data.index).toBe(1);
+        expect(error.data.account_id).toBe('bob.near');
+
+        // TODO: Expect some message?
     });
 
     test('test ReceiverMismatch error', async () => {

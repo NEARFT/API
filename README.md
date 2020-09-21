@@ -32,15 +32,6 @@ Start the node by following instructions from [nearcore](https://github.com/near
 
 Tests use sample contract from `near-hello` npm package, see https://github.com/nearprotocol/near-hello
 
-# Update error messages
-
-Follow next steps:
-
-1. [Change hash for the commit with errors in the nearcore](https://github.com/near/near-api-js/blob/master/gen_error_types.js#L7-L9)
-2. Generate new types for errors: `node gen_error_types.js`
-3. `yarn fix` fix any issues with linter.
-4. `yarn build` to update `lib/**.js` files
-
 # License
 
 This repository is distributed under the terms of both the MIT license and the Apache License (Version 2.0).

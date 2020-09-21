@@ -155,6 +155,7 @@ export class JsonRpcProvider extends Provider {
             jsonrpc: '2.0'
         };
         const response = await fetchJson(this.connection, JSON.stringify(request));
+        console.info('sendJsonRpc', method, params, response);
         if (response.error) {
             if (typeof response.error.data === 'object') {
                 if (typeof response.error.data.error_message === 'string' && typeof response.error.data.error_type === 'string') {

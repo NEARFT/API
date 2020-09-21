@@ -9,7 +9,6 @@ import {base_decode, base_encode} from './utils/serialize';
 import { PublicKey } from './utils/key_pair';
 import { PositionalArgsError } from './utils/errors';
 import { parseRpcError } from './utils/rpc_errors';
-import { ServerError } from './generated/rpc_error_types';
 
 import exponentialBackoff from './utils/exponential-backoff';
 
@@ -50,7 +49,9 @@ export interface AccountBalance {
 interface ReceiptLogWithFailure {
     receiptIds: [string];
     logs: [string];
-    failure: ServerError;
+    // TODO: What type to use here?
+    failure: object;
+    // failure: ServerError;
 }
 
 /**
@@ -133,6 +134,7 @@ export class Account {
                     try {
                         return await this.connection.provider.sendTransaction(signedTx);
                     } catch (error) {
+                    // TODO: Do we need to handle [FetchError: request to https://rpc.mainnet.near.org/ failed, reason: read ETIMEDOUT] somewhere?
                         if (error.type === 'TimeoutError') {
                             console.warn(`Retrying transaction ${receiverId}:${base_encode(txHash)} as it has timed out`);
                             return null;
