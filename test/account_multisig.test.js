@@ -56,7 +56,7 @@ beforeAll(async () => {
     console.log(startFromVersion);
 });
 
-describe('deployMultisig key rotations', () => {
+describe.skip('deployMultisig key rotations', () => {
 
     test('full access key if recovery method is "ledger" or "phrase", limited access key if "phone"', async () => {
         const account = await testUtils.createAccount(nearjs);
@@ -76,7 +76,7 @@ describe('deployMultisig key rotations', () => {
     
 });
 
-describe('account2fa transactions', () => {
+describe.skip('account2fa transactions', () => {
 
     test('add app key before deployMultisig', async() => {
         let account = await testUtils.createAccount(nearjs);
@@ -115,6 +115,28 @@ describe('account2fa transactions', () => {
         await sender.sendMoney(receiver.accountId, new BN(parseNearAmount('1')));
         const state = await receiver.state();
         expect(BigInt(state.amount)).toBeGreaterThanOrEqual(BigInt(new BN(receiverAmount).add(new BN(parseNearAmount('0.9'))).toString()));
+    });
+    
+});
+
+describe('multisig transactions', () => {
+
+    test('delete unconfirmed request', async() => {
+        const account = await testUtils.createAccount(nearjs);
+        const accountWith2FA = await getAccount2FA(account);
+        
+        accountWith2FA.setRequest({
+            accountId: 'test-account', 
+            requestId: 2, 
+            actions: []
+        });
+        console.log('requests: ', await accountWith2FA.getRequest());
+        // accountWith2FA.sendMoney(receiver.accountId, new BN(parseNearAmount('1')));
+        await accountWith2FA.deleteUnconfirmedRequests();
+        console.log('requests: ', await accountWith2FA.getRequest());
+        
+        // expect(result).toThrow(new Error('[DEL_ERR] Attempt to delete an earlier request before 15 minutes failed. Will try again.'));
+
     });
     
 });

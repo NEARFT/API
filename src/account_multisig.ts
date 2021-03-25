@@ -52,6 +52,7 @@ export class AccountMultisig extends Account {
 
     async signAndSendTransaction(receiverId: string, actions: Action[]): Promise<FinalExecutionOutcome> {
         const { accountId } = this;
+        console.log('>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<', accountId);
 
         if (this.isDeleteAction(actions)) {
             return await super.signAndSendTransaction(accountId, actions);
@@ -79,11 +80,13 @@ export class AccountMultisig extends Account {
 
     async deleteUnconfirmedRequests () {
         const { contract } = this;
+        console.log('>><><><><><<><><');
         const request_ids = await this.getRequestIds();
         for (const request_id of request_ids) {
             try {
                 await contract.delete_request({ request_id });
             } catch(e) {
+                console.warn(e);
                 throw new Error(`[DEL_ERR] Attempt to delete an earlier request before 15 minutes failed. Will try again.`);
             }
         }
