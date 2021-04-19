@@ -80,8 +80,8 @@ export class AccountMultisig extends Account {
 
     async deleteUnconfirmedRequests () {
         const { contract } = this;
-        console.log('>><><><><><<><><');
         const request_ids = await this.getRequestIds();
+        console.log('requestIDS', request_ids);
         for (const request_id of request_ids) {
             try {
                 await contract.delete_request({ request_id });

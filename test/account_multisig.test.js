@@ -124,17 +124,19 @@ describe('multisig transactions', () => {
     test('delete unconfirmed request', async() => {
         const account = await testUtils.createAccount(nearjs);
         const accountWith2FA = await getAccount2FA(account);
+        const actions = [nearApi.transactions.transfer('100000000000')];
         
         accountWith2FA.setRequest({
             accountId: 'test-account', 
             requestId: 2, 
-            actions: []
+            actions: [actions]
         });
-        console.log('requests: ', await accountWith2FA.getRequest());
-        // accountWith2FA.sendMoney(receiver.accountId, new BN(parseNearAmount('1')));
-        await accountWith2FA.deleteUnconfirmedRequests();
-        console.log('requests: ', await accountWith2FA.getRequest());
         
+        console.log('should be something ', await accountWith2FA.getRequest());
+        await accountWith2FA.deleteUnconfirmedRequests();
+        console.log('should be empty', await accountWith2FA.getRequest());
+        // console.log('requests: ', await accountWith2FA.getRequest());
+    
         // expect(result).toThrow(new Error('[DEL_ERR] Attempt to delete an earlier request before 15 minutes failed. Will try again.'));
 
     });
