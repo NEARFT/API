@@ -183,8 +183,6 @@ describe("multisig transactions", () => {
         const accountWith2FA = await getAccount2FA(account);
         const actions = [nearApi.transactions.transfer("1000000000")];
 
-        const GAS = new BN("1000000000000000000000");
-
         const convertActions = (actions, accountId, receiverId) =>
             actions.map((a) => {
                 const type = a.enum;
@@ -258,16 +256,6 @@ describe("multisig transactions", () => {
                 },
             })
         );
-        // {"request": {"receiver_id": "illia", "actions": [{"type": "Transfer", "amount": "1000000000000000000000"}]}}
-        // console.log(
-        //     await accountWith2FA.contract.add_request({
-        //         request: {
-        //             accountId: "test-account",
-        //             requestId: 2,
-        //             actions: [actions],
-        //         },
-        //     })
-        // );
 
         console.log(Object.keys(accountWith2FA.contract));
 
@@ -286,33 +274,14 @@ describe("multisig transactions", () => {
             )
         );
 
-        // await accountWith2FA.signAndSendTransaction(account.accountId, [
-        //     functionCall(
-        //         "add_request",
-        //         Buffer.from(
-        //             JSON.stringify({
-        //                 request: {
-        //                     receiver_id: "test-account",
-        //                     actions: [actions],
-        //                 },
-        //             })
-        //         ),
-        //         GAS,
-        //         MULTISIG_DEPOSIT
-        //     ),
-        // ]);
-
-        // await accountWith2FA.signAndSendTransactionAddUnconfirmedRequest(
-        //     actions,
-        //     GAS,
-        //     MULTISIG_DEPOSIT
-        // );
-
         console.log("should be something ", await accountWith2FA.getRequest());
         await accountWith2FA.deleteUnconfirmedRequests();
         console.log("should be empty", await accountWith2FA.getRequest());
-        // console.log('requests: ', await accountWith2FA.getRequest());
 
-        // expect(result).toThrow(new Error('[DEL_ERR] Attempt to delete an earlier request before 15 minutes failed. Will try again.'));
+        expect(result).toThrow(
+            new Error(
+                "[DEL_ERR] Attempt to delete an earlier request before 15 minutes failed. Will try again."
+            )
+        );
     });
 });
