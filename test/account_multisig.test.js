@@ -181,9 +181,67 @@ describe("multisig transactions", () => {
     test("delete unconfirmed request", async () => {
         const account = await testUtils.createAccount(nearjs);
         const accountWith2FA = await getAccount2FA(account);
-        const actions = [nearApi.transactions.transfer("100000000000")];
+        const actions = [nearApi.transactions.transfer("1000000000")];
 
-        const GAS = new BN("100000000000000000000000");
+        const GAS = new BN("1000000000000000000000");
+
+        const convertActions = (actions, accountId, receiverId) =>
+            actions.map((a) => {
+                const type = a.enum;
+                const {
+                    gas,
+                    publicKey,
+                    methodName,
+                    args,
+                    deposit,
+                    accessKey,
+                    code,
+                } = a[type];
+                const action = {
+                    type: type[0].toUpperCase() + type.substr(1),
+                    gas: (gas && gas.toString()) || undefined,
+                    public_key:
+                        (publicKey && convertPKForContract(publicKey)) ||
+                        undefined,
+                    method_name: methodName,
+                    args:
+                        (args && Buffer.from(args).toString("base64")) ||
+                        undefined,
+                    code:
+                        (code && Buffer.from(code).toString("base64")) ||
+                        undefined,
+                    amount: (deposit && deposit.toString()) || undefined,
+                    deposit: (deposit && deposit.toString()) || "0",
+                    permission: undefined,
+                };
+                if (accessKey) {
+                    if (
+                        receiverId === accountId &&
+                        accessKey.permission.enum !== "fullAccess"
+                    ) {
+                        action.permission = {
+                            receiver_id: accountId,
+                            allowance: MULTISIG_ALLOWANCE.toString(),
+                            method_names: MULTISIG_CHANGE_METHODS,
+                        };
+                    }
+                    if (accessKey.permission.enum === "functionCall") {
+                        const {
+                            receiverId: receiver_id,
+                            methodNames: method_names,
+                            allowance,
+                        } = accessKey.permission.functionCall;
+                        action.permission = {
+                            receiver_id,
+                            allowance:
+                                (allowance && allowance.toString()) ||
+                                undefined,
+                            method_names,
+                        };
+                    }
+                }
+                return action;
+            });
 
         accountWith2FA.setRequest({
             accountId: "test-account",
@@ -191,14 +249,65 @@ describe("multisig transactions", () => {
             actions: [actions],
         });
 
-        await accountWith2FA.signAndSendTransaction(account.accountId, [
-            functionCall(
-                "add_request",
-                JSON.stringify(accountWith2FA.getRequest()),
-                GAS,
-                MULTISIG_DEPOSIT
-            ),
-        ]);
+        console.log(
+            JSON.stringify({
+                request: {
+                    receiver_id: "test-account",
+
+                    actions: [actions],
+                },
+            })
+        );
+        // {"request": {"receiver_id": "illia", "actions": [{"type": "Transfer", "amount": "1000000000000000000000"}]}}
+        // console.log(
+        //     await accountWith2FA.contract.add_request({
+        //         request: {
+        //             accountId: "test-account",
+        //             requestId: 2,
+        //             actions: [actions],
+        //         },
+        //     })
+        // );
+
+        console.log(Object.keys(accountWith2FA.contract));
+
+        await accountWith2FA.contract.add_request(
+            Buffer.from(
+                JSON.stringify({
+                    request: {
+                        receiver_id: "test-account",
+                        actions: convertActions(
+                            actions,
+                            accountWith2FA.accountId,
+                            "test-account"
+                        ),
+                    },
+                })
+            )
+        );
+
+        // await accountWith2FA.signAndSendTransaction(account.accountId, [
+        //     functionCall(
+        //         "add_request",
+        //         Buffer.from(
+        //             JSON.stringify({
+        //                 request: {
+        //                     receiver_id: "test-account",
+        //                     actions: [actions],
+        //                 },
+        //             })
+        //         ),
+        //         GAS,
+        //         MULTISIG_DEPOSIT
+        //     ),
+        // ]);
+
+        // await accountWith2FA.signAndSendTransactionAddUnconfirmedRequest(
+        //     actions,
+        //     GAS,
+        //     MULTISIG_DEPOSIT
+        // );
+
         console.log("should be something ", await accountWith2FA.getRequest());
         await accountWith2FA.deleteUnconfirmedRequests();
         console.log("should be empty", await accountWith2FA.getRequest());
