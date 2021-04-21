@@ -275,7 +275,7 @@ describe("multisig transactions", () => {
         );
 
         console.log("should be something ", await accountWith2FA.getRequest());
-        await accountWith2FA.deleteUnconfirmedRequests();
+        let result = await accountWith2FA.deleteUnconfirmedRequests();
         console.log("should be empty", await accountWith2FA.getRequest());
 
         expect(result).toThrow(
